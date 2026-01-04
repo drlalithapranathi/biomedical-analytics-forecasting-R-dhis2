@@ -2,326 +2,145 @@
 
 ## Overview
 
-This project analyzes maternal and child health indicators in Sierra Leone across the care continuum from pregnancy through early childhood. Using DHIS2 data from 13 districts and 149 chiefdoms, we apply **time series forecasting** (linear regression, SES, ARIMA), **geospatial analysis** (GIS mapping, hierarchical drill-down), and **deep learning** (ResNet50 transfer learning for computer vision) to identify service delivery gaps and data quality issues. Implementation leverages **R** (ggplot2, forecast, dplyr), **Python** (TensorFlow/Keras, pandas, numpy), and **DHIS2** for dashboard development and visualization.
-
-**Analysis Framework:** Pregnancy (ANC, IPT) → Birth (skilled attendance) → Early Childhood (immunization, malnutrition surveillance)
-
-## 1. Maternal Health Domain
-
-#### **ANC IPT Coverage Trendline Analysis**
-**Objective:** Review trendlines between ANC IPT 1 and ANC IPT 2 coverage to identify when they will meet.
-
-**Methodology:**
-- **Data:** Monthly ANC IPT 1 and IPT 2 coverage data (Jan 2024 - June 2025)
-- **Analysis:** Linear regression using least squares method
-- **Forecasting:** 6-month ahead projection using linear trendlines
-- **Tools:** R (`lm()`, `ggplot2`)
-
-**Key Findings:** IPT 1 consistently higher than IPT 2 with diverging trendlines (no intersection within forecast period), indicating worsening retention rates between doses
-
-![Trendline Forecast](Visualizations-dashboard/Trendline%20forecast%206-month.png)
-
-**Files:** `Trend forecasting.ipynb`
-
----
-
-#### **SES Forecast for Western Area**
-**Objective:** Forecast ANC IPT 2 coverage for December 2025 using Simple Exponential Smoothing.
-
-**Methodology:**
-- **Data:** Western Area district, Jan 2024 - Nov 2025
-- **Model:** Simple Exponential Smoothing (SES) with two alpha values (α = 0.3, α = 0.7)
-- **Evaluation:** Mean Absolute Error (MAE) for last 6 months
-- **Tools:** R (`forecast` package, `HoltWinters()`)
-
-**Key Findings:**
-- **α = 0.3** (smoother forecasts): MAE = 6.44, December forecast = 94.47%
-- **α = 0.7** (responsive to recent changes): MAE = 7.26, December forecast = 93.64%
-- α = 0.3 model provided better short-term accuracy
-- ANC IPT 2 coverage benefits from reducing month-to-month volatility
-
-![SES Forecast](Visualizations-dashboard/SES%20ANC%20IPT%202%20coverage.png)
-
-**Files:** `SES forecast for trendline.ipynb`
-
----
-
-#### **Births by Skilled Attendants**
-**Objective:** Identify districts with lowest births by skilled attendants and describe their geographic characteristics.
-
-**Methodology:**
-- **Data:** District-level births attended by skilled personnel (2024)
-- **Derived Indicator:** Combined all birth types with skilled attendants
-- **Analysis:** Geospatial mapping with OpenStreetMap layers
-- **Tools:** DHIS2 Data Visualizer, GIS
-
-**Key Findings:**
-- **Bonthe** has the lowest births by skilled attendants
-- Located in far southern coastal region with riverine/island terrain
-- Other low-performing districts (Koinadugu, Kono, Pujehun) share similar challenges:
-  - Remote from capital Freetown
-  - Lack major highway infrastructure
-  - Predominantly rural with low population density
-  - Limited transport connectivity
-
-**Geographic Barriers Impact:** Remoteness, difficult terrain, and weak infrastructure contribute to reduced access to skilled birth services.
-
-![Births by Skilled Attendants](Visualizations-dashboard/births%20by%20skilled%20attendants%20q8.png)
-
-## 2. Immunization Domain
-
-#### **National Measles Coverage Analysis**
-**Objective:** Analyze measles coverage for children <1 year and identify months missing the 60% target.
-
-**Methodology:**
-- **Data:** National monthly measles coverage (Jan 2024 - Dec 2025)
-- **Indicator:** (Measles doses Fixed + Outreach) / Total population <1 year
-- **Visualization:** Line chart with 60% threshold line
-- **Tools:** R (`ggplot2`)
-
-**Key Findings:**
-- Coverage consistently **below 60% for ALL months**
-- Range: 18% - 32%
-- No month approaches the expected threshold
-- Seasonal rises around August-October
-- Reflects **persistent national underperformance** rather than isolated monthly declines
-- Suggests systemic challenges in measles vaccination uptake and/or data completeness
-
-![National Measles Coverage](Visualizations-dashboard/[IMAGE_NAME].png)
-
-**Files:** `drilldown and coverage visualizations.ipynb`
-
----
-
-#### **Drill-Down Analysis of Low Coverage**
-**Objective:** Identify specific districts, chiefdoms, and facilities missing the 60% target.
-
-**Methodology:**
-- **Levels Analyzed:** District → Chiefdom → Facility
-- **Derived Indicator:** Measles Doses <1y (replaced population denominator with 1)
-- **Visualization:** Hierarchical drill-down maps and bar charts
-- **Tools:** R (`dplyr`, `tidyr`), DHIS2 Maps
-
-**Key Findings:**
-
-**Districts:**
-- Even highest-performing (Western Area) only reached 55.6%
-- Most districts fall between 10-26%
-
-**Chiefdoms:**
-- 129 chiefdoms missed target
-- Lowest-performing areas have highest concentration of "no-data" facilities
-- Non-reporting facilities cluster in remote, hard-to-reach regions
-
-**Facilities:**
-- 85 facilities missed target
-- Many show **high measles stock BUT zero doses recorded**
-- Indicates data quality and reporting gaps rather than service absence
-- CHC, CHP, and MCHP facility types analyzed
-
-**Root Causes:** Both true service gaps AND significant under-reporting in rural areas.
-
-![Drill-Down Analysis](Visualizations-dashboard/drilldown%20q5.png)
-
-**Files:** `drilldown and coverage visualizations.ipynb`
-
----
-
-#### **Trend Type Analysis**
-**Objective:** Describe the type of trend in low measles vaccination coverage.
-
-**Methodology:**
-- **Temporal Analysis:** Monthly trends across 2024-2025
-- **Geographic Analysis:** District clustering patterns
-- **Data Quality Analysis:** Stock vs. doses administered discrepancies
-- **Visualizations:** Line charts, bar charts, drill-down maps
-
-**Key Findings:**
-
-1. **Time-Based Trend:**
-   - Chronically low throughout 2024-2025
-   - All months far below 60% threshold
-   - Modest fluctuations only
-   - Indicates persistent systemic challenges, not temporary disruptions
-   - Slight positive trend observed
-
-2. **Geographic Trend:**
-   - Low coverage clusters in remote and hard-to-reach districts
-   - Facilities dispersed, road access limited
-   - Chiefdoms show widespread service visibility gaps
-   - Geographic barriers strongly shape immunization outcomes
-
-3. **Reporting/Data Quality Trend:**
-   - High measles stock issuance BUT zero/missing doses administered
-   - Substantial under-reporting and data completeness issues
-   - Artificially depresses coverage values
-   - Obscures true performance
-
-**Conclusion:** Line graph (when), district bar chart (where), and drill-down map (why) provide complementary perspectives on coverage gaps.
-
-**Files:** `drilldown and coverage visualizations.ipynb`
-
----
-
-#### **Dropout Rate Correlation**
-**Objective:** Analyze correlation between Penta1-Measles dropout rate and measles coverage.
-
-**Methodology:**
-- **Data:** All districts, Jan 2024 - June 2025
-- **Indicators:** Dropout rate (Penta1 → Measles) and Measles Coverage <1y
-- **Analysis:** Pearson correlation coefficient
-- **Visualization:** Grouped bar chart by district
-- **Tools:** R (`cor()`, `ggplot2`)
-
-**Key Findings:**
-- **Pearson correlation: -0.295** (weak negative correlation)
-- Districts with higher dropout rates tend to have slightly lower measles coverage
-- Relationship is NOT strong
-- Substantial variation across districts exists
-- No strong or consistent inverse relationship
-
-**Interpretation:** While reducing dropout may contribute to small improvements in measles coverage, broader system-level and operational issues must also be addressed to achieve substantial gains in immunization performance.
-
-![Dropout vs Coverage Comparison](Visualizations-dashboard/q7.png)
-
-![Dropout Correlation](Visualizations-dashboard/corr%20q7.png)
-
-**Files:** `drilldown and coverage visualizations.ipynb`
-
----
-
-## 3. Child Malnutrition Domain
-
-#### **Malnutrition Rates by Chiefdom**
-**Objective:** Identify chiefdom with lowest malnutrition rate and high-malnutrition chiefdoms near Freetown.
-
-**Methodology:**
-- **Data:** Chiefdom-level weight-for-height <79% rate (2024-2025)
-- **Derived Indicator:** Combined severe (<70%) and moderate (70-79%) malnutrition
-- **Visualization:** Geospatial choropleth map with Google Streets layer
-- **Tools:** DHIS2 Maps, Sentinel-2 satellite imagery
-
-**Key Findings:**
-- **Lowest:** Malema (2.4%)
-- **Highest near Freetown:**
-  - Kaffu Bullom (33.21%)
-  - Lokomasama (34.77%)
-- Peri-urban areas near capital show unexpectedly high malnutrition
-- May reflect rapid urbanization, displacement, or service delivery gaps
-
-![Malnutrition Rates by Chiefdom](Visualizations-dashboard/3a%20malnutrition%20rates.png)
-
-**Files:** Presentation slides (maps generated via DHIS2)
-
----
-
-#### **Predicting Severe Malnutrition Using Computer Vision**
-**Objective:** Predict severe malnutrition rate for Bo district (November 2025) using monthly choropleth maps and a deep learning model.
-
-**Methodology:**
-
-**Data Preparation:**
-1. 21 monthly choropleth maps (Jan 2024 - Sep 2025) downloaded from DHIS2
-2. District segmentation using region-growing algorithm
-3. Six malnutrition bins created based on data distribution: 0-<4, 4-<5, 5-<6, 6-<7, 7-<9, 9+
-4. Maps recolored with fixed yellow→orange→red palette
-5. Maps standardized and saved as PNG files
-
-![District Segmentation](Visualizations-dashboard/district%20segmentation.png)
-
-**Model Architecture:**
-- **Base Model:** ResNet50 (pretrained on ImageNet)
-- **Transfer Learning:** Frozen convolutional layers used as feature extractor
-- **Custom Head:** GlobalAveragePooling2D → Dense(128, ReLU) → Dropout(0.5) → Dense(6, Softmax)
-- **Input:** 224×224×3 RGB images
-- **Output:** Probability distribution over 6 malnutrition bins
-
-**Training:**
-- **Train/Test Split:** 70/30 (14 train, 6 test, 1 holdout)
-- **Epochs:** 30
-- **Batch Size:** 2
-- **Optimizer:** Adam (learning rate = 1e-4)
-- **Loss:** Categorical cross-entropy
-
-**Two Models Compared:**
-1. **Unmasked Model:** Full map images (Bo visible)
-2. **Masked Model:** Bo district region replaced with neutral gray
-
-**Results:**
-
-| Model | Accuracy | F1 (Macro) | Predicted Bin (Sep 2025) | True Bin |
-|-------|----------|------------|--------------------------|----------|
-| Unmasked | 0.667 | 0.800 | 5-<6 | 4-<5 |
-| Masked | 0.667 | 0.800 | 5-<6 | 4-<5 |
-
-**Key Insights:**
-- Both models achieved identical 67% accuracy, predicting bin 5-<6 (one bin higher than true 4-<5 with probability 44.5%)
-- **Spatial patterns from other districts contain predictive signal** even when Bo is masked
-- Limited dataset size (21 images) constrains model accuracy
-
-![Masked Model Comparison](Visualizations-dashboard/masked%20model.png)
-
-**Files:** `deeplearning-resnet50-imaging.ipynb`
-
----
-
-### 4. Cross-Cutting Analysis
-
-#### **Dashboard Creation**
-A comprehensive DHIS2 dashboard was created consolidating all key visualizations:
-- ANC IPT Coverage Trends
-- Births by Skilled Attendants (Map)
-- Total Malnutrition Rates (Map)
-- National Measles Coverage (Line chart)
-- District Measles Coverage (Bar chart)
-- Drill-down Chiefdom and Facility Measles Coverage (Map)
-- Dropout vs. Measles Coverage Comparison (Bar chart)
-
-**Purpose:** Provides stakeholders with integrated view of maternal and child health service delivery across Sierra Leone.
+Maternal and child health analytics across 13 districts and 149 chiefdoms in Sierra Leone using DHIS2 data. Applied time series forecasting, geospatial analysis, deep learning, statistical correlation, and hierarchical analysis to analyze ANC coverage, immunization, and malnutrition.
+**Tools:** R, keras3, ggplot2, forecast, dplyr, tidyr, DHIS2, Jupyter Notebooks, Sentinel-2 satellite imagery.
+
+## Objectives
+
+1. **Time Series Forecasting**: Apply linear regression, SES, and ARIMA models to forecast ANC IPT coverage trends and retention rates
+2. **Geospatial Analysis**: Map births by skilled attendants and malnutrition rates by chiefdom using GIS to identify geographic service gaps
+3. **Measles Vaccination Analysis**: Hierarchical drill-down (district → chiefdom → facility), Pearson correlation of dropout rates, and temporal/geographic/data quality trend classification
+4. **Deep Learning**: Apply ResNet50 transfer learning to choropleth maps for malnutrition prediction with CNN-based spatial pattern recognition
+5. **Data Quality Assessment**: Identify validation rules and reporting gaps in DHIS2 data completeness
+6. **Dashboard Development**: Create integrated DHIS2 dashboard consolidating maternal and child health indicators
+
+## Dashboard
 
 ![DHIS2 Dashboard](Visualizations-dashboard/dashboard.png)
 
 ---
 
-#### **Data Validation Rules**
-**Objective:** Identify validation rules and data quality issues.
+## 1. Maternal Health Domain
 
-**Three Critical Validation Rules:**
+#### **ANC IPT Coverage Trendline Analysis**
+![Trendline Forecast](Visualizations-dashboard/Trendline%20forecast%206-month.png)
 
-1. **Consistency Rule:**
-   `Live_Births + Still_Births = Total_Births`
-   Ensures internal consistency in birth reporting.
+**Objective:** Analyze ANC IPT 1 and IPT 2 coverage trends to identify when trendlines will intersect.
 
-2. **Inventory Rule:**
-   `Measles_Stock_Dispensed ≤ Measles_Stock_On_Hand`
-   A facility cannot dispense more vaccine than available stock.
+**Methodology:**
+- Linear regression using least squares method with 6-month trendline forecast
 
-3. **Demographic Rule:**
-   `Population_<1yr < Population_<5yr`
-   Demographically, children <1 must be subset of children <5.
+**Key Findings:**
+Diverging IPT 1 and IPT 2 trendlines indicate worsening retention rates between doses
 
-**Data Quality Issues Identified:**
+---
 
-1. **Widespread missing values** for doses administered (<1 year)
-   - Many facilities reported stock but no doses
-   - Artificially low or zero coverage
+#### **SES Forecast for Western Area**
+![SES Forecast](Visualizations-dashboard/SES%20ANC%20IPT%202%20coverage.png)
 
-2. **Inconsistent/outdated population denominators**
-   - Extremely small or unusual "population <1" values
-   - Produces coverage >100% or high volatility
+**Objective:** Forecast ANC IPT 2 coverage for December 2025 using Simple Exponential Smoothing.
 
-3. **Facilities not reporting** despite receiving vaccines
-   - Non-reporting sites cause geographic blind spots
-   - Concentrated in remote locations
+**Methodology:**
+- Simple Exponential Smoothing (SES) with α optimization
+- Tools: R (`forecast`, `HoltWinters()`)
 
-4. **Over-reporting or duplicate entries** in urban facilities
-   - Implausibly high doses relative to catchment size
-   - Suggests data entry duplication
+**Key Findings:**
+α = 0.3 model achieved better accuracy (MAE = 9.97, forecast = 95.75%) with smoother forecasting approach
 
-5. **Spatial reporting biases**
-   - Urban facilities: complete data
-   - Rural/riverine/hard-to-reach chiefdoms: data gaps
-   - Systematic geographic bias in reporting
+---
+
+#### **Births by Skilled Attendants**
+
+**Objective:** Identify districts with lowest births by skilled attendants and analyze geographic barriers.
+
+**Methodology:**
+- Geospatial mapping with GIS and OpenStreetMap layers
+
+**Key Findings:**
+Bonthe district has lowest births by skilled attendants, driven by remoteness and geographic barriers
+
+## 2. Immunization Domain
+
+#### **National Measles Coverage Analysis**
+
+**Objective:** Analyze national measles coverage trends and identify months missing 60% target.
+
+**Methodology:**
+- Time series analysis with 60% coverage threshold visualization
+
+**Key Findings:**
+Coverage consistently below 60% target (range: 18-32%), indicating persistent national underperformance
+
+---
+
+#### **Drill-Down Analysis of Low Coverage**
+
+**Objective:** Identify specific districts, chiefdoms, and facilities that missed 60% measles coverage target.
+
+**Methodology:**
+- Hierarchical drill-down analysis (District → Chiefdom → Facility)
+- Tools: R (`dplyr`, `tidyr`), DHIS2 Maps
+
+**Key Findings:**
+129 chiefdoms and 85 facilities missed 60% target; data quality issues identified in remote regions
+
+---
+
+#### **Trend Type Analysis**
+
+**Objective:** Describe the type of trend of low measles vaccination coverage.
+
+**Methodology:**
+- Multi-dimensional trend classification (temporal, geographic, data quality)
+
+**Key Findings:**
+Three trend types identified: time-based (chronically low), geographic (remote clustering), data quality (under-reporting)
+
+---
+
+#### **Dropout Rate Correlation**
+![Dropout vs Coverage Comparison](Visualizations-dashboard/q7.png)
+
+![Dropout Correlation](Visualizations-dashboard/corr%20q7.png)
+
+**Objective:** Analyze correlation between Penta1-Measles dropout rate and measles coverage.
+
+**Methodology:**
+- Pearson correlation analysis (Dropout rate vs. Measles Coverage)
+
+**Key Findings:**
+Weak negative correlation (Pearson: -0.295) indicates broader system-level issues beyond dropout rates
+
+---
+
+## 3. Child Malnutrition Domain
+
+#### **Geospatial Malnutrition Analysis**
+
+**Objective:** Map malnutrition rates by chiefdom and identify areas with highest and lowest rates.
+
+**Methodology:**
+- Geospatial choropleth mapping with GIS
+- Tools: DHIS2 Maps, Sentinel-2 satellite imagery
+
+**Key Findings:**
+Lowest in Malema (2.4%), highest near Freetown: Kaffu Bullom (33.21%), Lokomasama (34.77%)
+
+---
+
+#### **Deep Learning: ResNet50 for Malnutrition Prediction**
+![District Segmentation](Visualizations-dashboard/district%20segmentation.png)
+
+**Objective:** Predict severe malnutrition for Bo district using spatial patterns from neighboring districts.
+
+**Methodology:**
+- ResNet50 transfer learning with CNN for spatial pattern recognition
+- Tools: R (`keras3`, `imager`)
+
+**Key Findings:**
+Achieved 67% accuracy (F1: 0.667), demonstrating geographic interdependence in malnutrition rates
+
+![Masked Model Comparison](Visualizations-dashboard/masked%20model.png)
 
 ---
 
@@ -341,26 +160,7 @@ A comprehensive DHIS2 dashboard was created consolidating all key visualizations
 
 7. **Spatial Autocorrelation in Malnutrition:** Deep learning model successfully predicted district-level malnutrition using spatial patterns from neighboring regions (67% accuracy), demonstrating geographic interdependence
 
-8. **Model Performance Insights:** SES forecasting showed smoother models (α=0.3, MAE=6.44) outperformed responsive models (α=0.7, MAE=7.26), suggesting value in reducing noise over tracking volatility
-
----
-
-## Limitations
-
-1. **Small Dataset for Deep Learning:**
-   - Only 21 monthly images for malnutrition prediction
-   - Limits model generalization and accuracy
-
-2. **Missing Data:**
-   - 11 missing values in malnutrition dataset
-   - Incomplete facility reporting affects coverage calculations
-
-3. **Linear Model Assumptions:**
-   - Trendline forecasts assume no policy changes or interventions
-
-4. **Temporal Coverage:**
-   - Analysis limited to 2024-2025
-
+8. **Model Performance Insights:** SES forecasting showed smoother models (α=0.3, MAE=9.97) outperformed responsive models (α=0.7, MAE=10.33), suggesting value in reducing noise over tracking volatility
 
 ---
 

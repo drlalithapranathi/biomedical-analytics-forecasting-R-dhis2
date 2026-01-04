@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project analyzes maternal and child health indicators in Sierra Leone across the care continuum from pregnancy through early childhood. Using DHIS2 data (January 2024 - September 2025) from 13 districts and 149 chiefdoms, we apply **time series forecasting** (linear regression, SES, ARIMA), **geospatial analysis** (GIS mapping, hierarchical drill-down), and **deep learning** (ResNet50 transfer learning for computer vision) to identify service delivery gaps and data quality issues. Implementation leverages **R** (ggplot2, forecast, dplyr), **Python** (TensorFlow/Keras, pandas, numpy), and **DHIS2** for dashboard development and visualization.
+This project analyzes maternal and child health indicators in Sierra Leone across the care continuum from pregnancy through early childhood. Using DHIS2 data from 13 districts and 149 chiefdoms, we apply **time series forecasting** (linear regression, SES, ARIMA), **geospatial analysis** (GIS mapping, hierarchical drill-down), and **deep learning** (ResNet50 transfer learning for computer vision) to identify service delivery gaps and data quality issues. Implementation leverages **R** (ggplot2, forecast, dplyr), **Python** (TensorFlow/Keras, pandas, numpy), and **DHIS2** for dashboard development and visualization.
 
 **Analysis Framework:** Pregnancy (ANC, IPT) → Birth (skilled attendance) → Early Childhood (immunization, malnutrition surveillance)
 
@@ -17,8 +17,7 @@ This project analyzes maternal and child health indicators in Sierra Leone acros
 - **Forecasting:** 6-month ahead projection using linear trendlines
 - **Tools:** R (`lm()`, `ggplot2`)
 
-**Key Findings:**
-- IPT 1 consistently higher than IPT 2 with diverging trendlines (no intersection within forecast period), indicating worsening retention rates between doses
+**Key Findings:** IPT 1 consistently higher than IPT 2 with diverging trendlines (no intersection within forecast period), indicating worsening retention rates between doses
 
 ![Trendline Forecast](Visualizations-dashboard/Trendline%20forecast%206-month.png)
 

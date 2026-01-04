@@ -27,11 +27,9 @@ Maternal and child health analytics across 13 districts and 149 chiefdoms in Sie
 
 **Objective:** Analyze ANC IPT 1 and IPT 2 coverage trends to identify when trendlines will intersect.
 
-**Methodology:**
-- Linear regression using least squares method with 6-month trendline forecast
+**Methodology:** Linear regression using least squares method with 6-month trendline forecast
 
-**Key Findings:**
-Diverging IPT 1 and IPT 2 trendlines indicate worsening retention rates between doses
+**Key Findings:** Diverging IPT 1 and IPT 2 trendlines indicate worsening retention rates between doses
 
 ---
 
@@ -44,8 +42,7 @@ Diverging IPT 1 and IPT 2 trendlines indicate worsening retention rates between 
 - Simple Exponential Smoothing (SES) with α optimization
 - Tools: R (`forecast`, `HoltWinters()`)
 
-**Key Findings:**
-α = 0.3 model achieved better accuracy (MAE = 9.97, forecast = 95.75%) with smoother forecasting approach
+**Key Findings:** α = 0.3 model achieved better accuracy (MAE = 9.97, forecast = 95.75%) with smoother forecasting approach
 
 ---
 
@@ -53,11 +50,9 @@ Diverging IPT 1 and IPT 2 trendlines indicate worsening retention rates between 
 
 **Objective:** Identify districts with lowest births by skilled attendants and analyze geographic barriers.
 
-**Methodology:**
-- Geospatial mapping with GIS and OpenStreetMap layers
+**Methodology:** Geospatial mapping with GIS and OpenStreetMap layers
 
-**Key Findings:**
-Bonthe district has lowest births by skilled attendants, driven by remoteness and geographic barriers
+**Key Findings:** Bonthe district has lowest births by skilled attendants, driven by remoteness and geographic barriers
 
 ## 2. Immunization Domain
 
@@ -65,11 +60,9 @@ Bonthe district has lowest births by skilled attendants, driven by remoteness an
 
 **Objective:** Analyze national measles coverage trends and identify months missing 60% target.
 
-**Methodology:**
-- Time series analysis with 60% coverage threshold visualization
+**Methodology:** Time series analysis with 60% coverage threshold visualization
 
-**Key Findings:**
-Coverage consistently below 60% target (range: 18-32%), indicating persistent national underperformance
+**Key Findings:** Coverage consistently below 60% target (range: 18-32%), indicating persistent national underperformance
 
 ---
 
@@ -81,8 +74,7 @@ Coverage consistently below 60% target (range: 18-32%), indicating persistent na
 - Hierarchical drill-down analysis (District → Chiefdom → Facility)
 - Tools: R (`dplyr`, `tidyr`), DHIS2 Maps
 
-**Key Findings:**
-129 chiefdoms and 85 facilities missed 60% target; data quality issues identified in remote regions
+**Key Findings:** 129 chiefdoms and 85 facilities missed 60% target; data quality issues identified in remote regions
 
 ---
 
@@ -90,11 +82,9 @@ Coverage consistently below 60% target (range: 18-32%), indicating persistent na
 
 **Objective:** Describe the type of trend of low measles vaccination coverage.
 
-**Methodology:**
-- Multi-dimensional trend classification (temporal, geographic, data quality)
+**Methodology:** Multi-dimensional trend classification (temporal, geographic, data quality)
 
-**Key Findings:**
-Three trend types identified: time-based (chronically low), geographic (remote clustering), data quality (under-reporting)
+**Key Findings:** Three trend types identified: time-based (chronically low), geographic (remote clustering), data quality (under-reporting)
 
 ---
 
@@ -105,11 +95,9 @@ Three trend types identified: time-based (chronically low), geographic (remote c
 
 **Objective:** Analyze correlation between Penta1-Measles dropout rate and measles coverage.
 
-**Methodology:**
-- Pearson correlation analysis (Dropout rate vs. Measles Coverage)
+**Methodology:** Pearson correlation analysis (Dropout rate vs. Measles Coverage)
 
-**Key Findings:**
-Weak negative correlation (Pearson: -0.295) indicates broader system-level issues beyond dropout rates
+**Key Findings:** Weak negative correlation (Pearson: -0.295) indicates broader system-level issues beyond dropout rates
 
 ---
 
@@ -123,8 +111,7 @@ Weak negative correlation (Pearson: -0.295) indicates broader system-level issue
 - Geospatial choropleth mapping with GIS
 - Tools: DHIS2 Maps, Sentinel-2 satellite imagery
 
-**Key Findings:**
-Lowest in Malema (2.4%), highest near Freetown: Kaffu Bullom (33.21%), Lokomasama (34.77%)
+**Key Findings:** Lowest in Malema (2.4%), highest near Freetown: Kaffu Bullom (33.21%), Lokomasama (34.77%)
 
 ---
 
@@ -137,8 +124,7 @@ Lowest in Malema (2.4%), highest near Freetown: Kaffu Bullom (33.21%), Lokomasam
 - ResNet50 transfer learning with CNN for spatial pattern recognition
 - Tools: R (`keras3`, `imager`)
 
-**Key Findings:**
-Achieved 67% accuracy (F1: 0.667), demonstrating geographic interdependence in malnutrition rates
+**Key Findings:** Achieved 67% accuracy (F1: 0.667), demonstrating geographic interdependence in malnutrition rates
 
 ![Masked Model Comparison](Visualizations-dashboard/masked%20model.png)
 

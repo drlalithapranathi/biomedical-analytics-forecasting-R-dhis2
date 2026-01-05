@@ -1,4 +1,4 @@
-# Maternal and Child Health Indicators in Sierra Leone
+# Maternal and Child Health Indicators in Sierra Leone - Healthcare Analytics
 
 ## Overview
 
